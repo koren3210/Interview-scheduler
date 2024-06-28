@@ -6,9 +6,8 @@ const { combine, timestamp, printf, colorize } = format;
 // Configure colorization options
 winston.addColors({
   error: "red",
-  warn: "yellow",
-  info: "cyan",
-  debug: "blue",
+  http: "cyan",
+  info: "green",
 });
 
 const logsDirectory = process.env.LOGS_DIRECTORY || "logs";
@@ -32,8 +31,26 @@ const logger = winston.createLogger({
       filename: `${logsDirectory}/error.log`,
       level: "error",
     }),
-    new winston.transports.File({ filename: `${logsDirectory}/combined.log` }),
-    new winston.transports.Console(),
+    new winston.transports.File({
+      filename: `${logsDirectory}/http.log`,
+      level: "http",
+    }),
+    new winston.transports.Console({
+      level: "error",
+      format: combine(
+        colorize({ all: true }),
+        timestamp({ format: "YYYY-MM-DD hh:mm:ss.SSS A" }),
+        logFormat
+      ),
+    }),
+    new winston.transports.Console({
+      level: "http",
+      format: combine(
+        colorize({ all: true }),
+        timestamp({ format: "YYYY-MM-DD hh:mm:ss.SSS A" }),
+        logFormat
+      ),
+    }),
   ],
 });
 

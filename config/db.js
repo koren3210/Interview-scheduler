@@ -9,7 +9,7 @@ const sequelize = new Sequelize({
   port: process.env.DB_PORT,
   dialect: "mysql",
   logging: (msg) => {
-    logger.info(msg); // Log Sequelize messages with Winston
+    logger.http(msg); // Log Sequelize messages with Winston
   },
 });
 

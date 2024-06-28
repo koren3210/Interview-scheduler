@@ -23,6 +23,7 @@ const Candidate = sequelize.define("Candidate", {
   PhoneNumber: {
     type: DataTypes.STRING(20),
     allowNull: false,
+    unique: true,
   },
   Resume: {
     type: DataTypes.TEXT,

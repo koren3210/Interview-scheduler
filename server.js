@@ -1,34 +1,25 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const morgan = require("morgan");
+const { default: helmet } = require("helmet");
 const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
+const morganMiddleware = require("./middleware/morgan");
 const sequelize = require("./config/db");
 const corsOptions = require("./config/corsOptions");
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3000;
 
-// Morgan middleware setup to use Winston for logging HTTP requests
-const morganMiddleware = morgan(
-  ":method :url :status :res[content-length] - :response-time ms",
-  {
-    stream: {
-      write: (message) => logger.http(message.trim()),
-    },
-  }
-);
-
-app.use(morganMiddleware);
-
-// Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cors(corsOptions));
 
-// Test database connection
+// Helmet middleware for setting secure headers
+app.use(helmet());
+app.use(morganMiddleware);
+
+//Database connection
 sequelize
   .authenticate()
   .then(() => {
