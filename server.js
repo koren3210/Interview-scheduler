@@ -13,10 +13,12 @@ const PORT = process.env.SERVER_PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cors(corsOptions));
 
 // Helmet middleware for setting secure headers
 app.use(helmet());
+//Morgan middleware for log http request
 app.use(morganMiddleware);
 
 //Database connection
@@ -31,8 +33,8 @@ sequelize
 
 // Routes
 app.use("/api/candidates", require("./routes/candiates"));
-// app.use("/api/interviews", interviewsRouter);
-// app.use("/api/interviewers", interviewersRouter);
+app.use("/api/interviewers", require("./routes/interviewer"));
+app.use("/api/interview", require("./routes/interview"));
 
 // Error handling middleware
 app.use(errorHandler);

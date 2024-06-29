@@ -1,3 +1,4 @@
+//Formatting the response from the DB from PascalCase to JS convention - camelCase.
 const formatEntityResponse = (entity) => {
   if (!entity || !entity.dataValues) return null;
 

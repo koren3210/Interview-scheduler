@@ -3,9 +3,10 @@ const sequelize = require("../config/db");
 
 const Interviewer = sequelize.define("Interviewer", {
   InterviewerID: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+    type: DataTypes.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
+    allowNull: false,
   },
   FirstName: {
     type: DataTypes.STRING(100),
