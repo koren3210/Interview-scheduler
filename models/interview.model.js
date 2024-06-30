@@ -1,7 +1,7 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-const Interview = sequelize.define("Interview", {
+const Interview = sequelize.define('Interview', {
   InterviewID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -12,16 +12,16 @@ const Interview = sequelize.define("Interview", {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: "Candidates",
-      key: "CandidateID",
+      model: 'Candidates',
+      key: 'CandidateID',
     },
   },
   InterviewerID: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: "Interviewers",
-      key: "InterviewerID",
+      model: 'Interviewers',
+      key: 'InterviewerID',
     },
   },
   InterviewDate: {

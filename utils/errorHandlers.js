@@ -1,19 +1,13 @@
 const handleSequelizeUniqueConstraintError = (err) => {
-  if (err.name !== "SequelizeUniqueConstraintError") return null;
-
-  const errors = {};
-
-  for (const field in err.fields) {
-    if (err.fields.hasOwnProperty(field)) {
-      errors[field] = `${
-        field.charAt(0).toUpperCase() + field.slice(1)
-      } already exists.`;
-    }
+  if (err.name === 'SequelizeUniqueConstraintError') {
+    // Extract the unique constraint error message
+    const errorMessage = err.errors[0].message || 'Unique constraint error';
+    return {
+      status: 400, // Bad Request
+      message: errorMessage,
+    };
   }
-
-  return errors;
+  return null;
 };
 
-module.exports = {
-  handleSequelizeUniqueConstraintError,
-};
+module.exports = handleSequelizeUniqueConstraintError;

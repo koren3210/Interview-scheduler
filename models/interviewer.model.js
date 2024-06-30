@@ -1,8 +1,9 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
+const Interview = require('./interview.model');
 
-const Candidate = sequelize.define("Candidate", {
-  CandidateID: {
+const Interviewer = sequelize.define('Interviewer', {
+  InterviewerID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -26,10 +27,6 @@ const Candidate = sequelize.define("Candidate", {
     allowNull: false,
     unique: true,
   },
-  Resume: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -42,4 +39,7 @@ const Candidate = sequelize.define("Candidate", {
   },
 });
 
-module.exports = Candidate;
+Interviewer.hasMany(Interview, { foreignKey: 'InterviewerID' });
+Interview.belongsTo(Interviewer, { foreignKey: 'InterviewerID' });
+
+module.exports = Interviewer;

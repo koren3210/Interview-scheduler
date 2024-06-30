@@ -5,9 +5,7 @@ const validateRequest = (schema) => {
       allowUnknown: true,
     });
     if (error) {
-      return res
-        .status(400)
-        .json({ message: "Validation error", details: error.details });
+      return res.status(400).json({ message: 'Validation error', details: error.details });
     }
     req.body = value;
     next();

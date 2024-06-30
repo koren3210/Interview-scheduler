@@ -1,12 +1,12 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const { default: helmet } = require("helmet");
-const logger = require("./middleware/logger");
-const errorHandler = require("./middleware/errorHandler");
-const morganMiddleware = require("./middleware/morgan");
-const sequelize = require("./config/db");
-const corsOptions = require("./config/corsOptions");
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const { default: helmet } = require('helmet');
+const logger = require('./middleware/logger');
+const errorHandler = require('./middleware/errorHandler');
+const morganMiddleware = require('./middleware/morgan');
+const sequelize = require('./config/db');
+const corsOptions = require('./config/corsOptions');
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3000;
@@ -21,23 +21,24 @@ app.use(helmet());
 //Morgan middleware for log http request
 app.use(morganMiddleware);
 
+// Routes
+app.use('/api/candidates', require('./routes/candiates.route'));
+app.use('/api/interviewers', require('./routes/interviewer.route'));
+app.use('/api/interviews', require('./routes/interview.route'));
+app.use('/api/interviews-schedule', require('./routes/interviewSchedule.route'));
+
+// Error handling middleware
+app.use(errorHandler);
+
 //Database connection
 sequelize
   .authenticate()
   .then(() => {
-    logger.info("Database connection has been established successfully.");
+    logger.info('Database connection has been established successfully.');
   })
   .catch((err) => {
-    logger.error("Unable to connect to the database:", err);
+    logger.error('Unable to connect to the database:', err);
   });
-
-// Routes
-app.use("/api/candidates", require("./routes/candiates"));
-app.use("/api/interviewers", require("./routes/interviewer"));
-app.use("/api/interview", require("./routes/interview"));
-
-// Error handling middleware
-app.use(errorHandler);
 
 // Start the server
 sequelize
@@ -48,5 +49,5 @@ sequelize
     });
   })
   .catch((err) => {
-    logger.error("Unable to sync database models:", err);
+    logger.error('Unable to sync database models:', err);
   });

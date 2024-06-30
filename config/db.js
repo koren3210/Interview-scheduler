@@ -1,5 +1,5 @@
-const { Sequelize } = require("sequelize");
-const logger = require("../middleware/logger");
+const { Sequelize } = require('sequelize');
+const logger = require('../middleware/logger');
 
 const sequelize = new Sequelize({
   database: process.env.DB_DATABASE,
@@ -7,9 +7,9 @@ const sequelize = new Sequelize({
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
-  dialect: "mysql",
+  dialect: 'mysql',
   logging: (msg) => {
-    logger.http(msg); // Log Sequelize messages with Winston
+    logger.info(msg); // Log Sequelize messages with Winston
   },
 });
 
