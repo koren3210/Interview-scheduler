@@ -1,40 +1,39 @@
-const Interview = require('../models/interview.model');
-const InterviewSchedule = require('../models/interviewSchedule.model');
-const { handleSequelizeUniqueConstraintError } = require('../utils/errorHandlers');
+const interviewService = require('../services/interview.service');
 const formatEntityResponse = require('../utils/formatEntityResponse');
-const { Op } = require('sequelize');
+const createError = require('http-errors');
 
 // Create a new interview
 const createInterview = async (req, res, next) => {
   try {
     const { candidateID, interviewerID, interviewDate, interviewTime, interviewType, interviewResult } = req.body;
 
-    // Create new interview in the database
-    const newInterview = await Interview.create({
-      CandidateID: candidateID,
-      InterviewerID: interviewerID,
-      InterviewDate: interviewDate,
-      InterviewTime: interviewTime,
-      InterviewType: interviewType,
-      InterviewResult: interviewResult,
+    const newInterview = await interviewService.createInterview({
+      candidateID,
+      interviewerID,
+      interviewDate,
+      interviewTime,
+      interviewType,
+      interviewResult,
     });
 
     res.status(201).json(formatEntityResponse(newInterview));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
 // Get all interviews
 const getAllInterviews = async (req, res, next) => {
   try {
-    const interviews = await Interview.findAll();
+    const interviews = await interviewService.getAllInterviews();
+
     if (!interviews.length) {
-      return res.status(204).json({ message: 'No interviews found.' });
+      return next(createError(204, 'No interviews found.'));
     }
-    res.json(interviews.map((interview) => formatEntityResponse(interview)));
+
+    res.json(interviews.map(formatEntityResponse));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -43,13 +42,11 @@ const getInterviewById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const interview = await Interview.findByPk(id);
-    if (!interview) {
-      return res.status(404).json({ message: 'No interview matches ID' });
-    }
+    const interview = await interviewService.findInterviewById(id);
+
     res.json(formatEntityResponse(interview));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -59,23 +56,11 @@ const updateInterviewResult = async (req, res, next) => {
   const { interviewResult } = req.body;
 
   try {
-    // Find interview by ID in the database
-    let interview = await Interview.findByPk(id);
+    const updatedInterview = await interviewService.updateInterviewResult(id, interviewResult);
 
-    // Check if interview exists
-    if (!interview) {
-      return res.status(404).json({ message: 'No interview matches ID' });
-    }
-
-    // Update interview result
-    interview.InterviewResult = interviewResult || interview.InterviewResult;
-
-    // Save updated interview
-    await interview.save();
-
-    res.json(formatEntityResponse(interview));
+    res.json(formatEntityResponse(updatedInterview));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -84,45 +69,28 @@ const deleteInterview = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const interview = await Interview.findByPk(id);
-    if (!interview) {
-      return res.status(404).json({ message: 'No interview matches ID' });
-    }
+    await interviewService.deleteInterview(id);
 
-    await interview.destroy();
     res.json({ message: 'Interview deleted successfully' });
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
 // Get interview schedules by date range
 const getInterviewSchedulesByDateRange = async (req, res, next) => {
-  console.log('first');
   try {
     const { startDate, endDate } = req.body;
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const schedules = await interviewService.getInterviewSchedulesByDateRange(startDate, endDate);
 
-    const schedules = await InterviewSchedule.findAll({
-      include: [
-        {
-          model: Interview,
-          required: true,
-        },
-      ],
-      where: {
-        ScheduleDate: {
-          [Op.between]: [start, end],
-        },
-      },
-      order: [['ScheduleDate', 'ASC']],
-    });
+    if (!schedules.length) {
+      return next(createError(204, 'No interview schedules found in the given date range.'));
+    }
 
-    res.status(200).json(schedules.map((schedule) => formatEntityResponse(schedule)));
+    res.status(200).json(schedules.map(formatEntityResponse));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 

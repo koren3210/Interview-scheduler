@@ -1,36 +1,37 @@
-const InterviewSchedule = require('../models/interviewSchedule.model');
-const { handleSequelizeUniqueConstraintError } = require('../utils/errorHandlers');
+const interviewScheduleService = require('../services/interviewSchedule.service');
 const formatEntityResponse = require('../utils/formatEntityResponse');
+const createError = require('http-errors');
 
 // Create a new interview schedule
 const createInterviewSchedule = async (req, res, next) => {
   try {
     const { interviewID, scheduleDate, scheduleTime, room } = req.body;
 
-    // Create new interview schedule in the database
-    const newInterviewSchedule = await InterviewSchedule.create({
-      InterviewID: interviewID,
-      ScheduleDate: scheduleDate,
-      ScheduleTime: scheduleTime,
-      Room: room,
+    const newInterviewSchedule = await interviewScheduleService.createInterviewSchedule({
+      interviewID,
+      scheduleDate,
+      scheduleTime,
+      room,
     });
 
     res.status(201).json(formatEntityResponse(newInterviewSchedule));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
 // Get all interview schedules
 const getAllInterviewSchedules = async (req, res, next) => {
   try {
-    const interviewSchedules = await InterviewSchedule.findAll();
+    const interviewSchedules = await interviewScheduleService.getAllInterviewSchedules();
+
     if (!interviewSchedules.length) {
-      return res.status(204).json({ message: 'No interview schedules found.' });
+      return next(createError(204, 'No interview schedules found.'));
     }
-    res.json(interviewSchedules.map((schedule) => formatEntityResponse(schedule)));
+
+    res.json(interviewSchedules.map(formatEntityResponse));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -39,13 +40,10 @@ const getInterviewScheduleById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const interviewSchedule = await InterviewSchedule.findByPk(id);
-    if (!interviewSchedule) {
-      return res.status(404).json({ message: 'No interview schedule matches ID' });
-    }
+    const interviewSchedule = await interviewScheduleService.findInterviewScheduleById(id);
     res.json(formatEntityResponse(interviewSchedule));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -55,26 +53,16 @@ const updateInterviewSchedule = async (req, res, next) => {
   const { interviewID, scheduleDate, scheduleTime, room } = req.body;
 
   try {
-    // Find interview schedule by ID in the database
-    let interviewSchedule = await InterviewSchedule.findByPk(id);
+    const updatedInterviewSchedule = await interviewScheduleService.updateInterviewSchedule(id, {
+      interviewID,
+      scheduleDate,
+      scheduleTime,
+      room,
+    });
 
-    // Check if interview schedule exists
-    if (!interviewSchedule) {
-      return res.status(404).json({ message: 'No interview schedule matches ID' });
-    }
-
-    // Update interview schedule fields if provided
-    interviewSchedule.InterviewID = interviewID || interviewSchedule.InterviewID;
-    interviewSchedule.ScheduleDate = scheduleDate || interviewSchedule.ScheduleDate;
-    interviewSchedule.ScheduleTime = scheduleTime || interviewSchedule.ScheduleTime;
-    interviewSchedule.Room = room || interviewSchedule.Room;
-
-    // Save updated interview schedule
-    await interviewSchedule.save();
-
-    res.json(formatEntityResponse(interviewSchedule));
+    res.json(formatEntityResponse(updatedInterviewSchedule));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -83,15 +71,10 @@ const deleteInterviewSchedule = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const interviewSchedule = await InterviewSchedule.findByPk(id);
-    if (!interviewSchedule) {
-      return res.status(404).json({ message: 'No interview schedule matches ID' });
-    }
-
-    await interviewSchedule.destroy();
+    await interviewScheduleService.deleteInterviewSchedule(id);
     res.json({ message: 'Interview schedule deleted successfully' });
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 

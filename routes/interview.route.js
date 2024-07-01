@@ -11,12 +11,13 @@ const {
 const validateRequest = require('../middleware/validateRequest');
 const interviewSchema = require('../validation/interviewSchema');
 const dateRangeSchema = require('../validation/dateRangeSchema');
+const interviewResultSchema = require('../validation/interviewResultSchema');
 
 router.post('/', validateRequest(interviewSchema), createInterview); // POST /api/interviews
 router.get('/', getAllInterviews); // GET /api/interviews
 router.get('/schedule', validateRequest(dateRangeSchema), getInterviewSchedulesByDateRange); // GET /api/interviews/schedule
 router.get('/:id', getInterviewById); // GET /api/interviews/:id
-router.put('/:id', updateInterviewResult); // PUT /api/interviews/:id
+router.put('/:id', validateRequest(interviewResultSchema), updateInterviewResult); // PUT /api/interviews/:id
 router.delete('/:id', deleteInterview); // DELETE /api/interviews/:id
 
 module.exports = router;

@@ -3,7 +3,7 @@ const handleSequelizeUniqueConstraintError = require('../utils/errorHandlers');
 
 function errorHandler(err, req, res, next) {
   let errStatus = err.statusCode || 500;
-  let errMsg = err.message || 'Something went wrong';
+  let errMsg = err.message || 'Internal server Error';
 
   // Handle Sequelize unique constraint errors
   const uniqueError = handleSequelizeUniqueConstraintError(err);
@@ -12,8 +12,15 @@ function errorHandler(err, req, res, next) {
     errMsg = uniqueError.message;
   }
 
-  // Log error
-  logger.error(`${errStatus} - ${errMsg} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+  // Log error details
+  logger.error({
+    status: errStatus,
+    message: errMsg,
+    url: req.originalUrl,
+    method: req.method,
+    ip: req.ip,
+    stack: err.stack,
+  });
 
   // Respond with the error
   res.status(errStatus).json({

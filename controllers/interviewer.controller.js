@@ -1,21 +1,18 @@
-const Candidate = require('../models/candidate.model');
-const Interview = require('../models/interview.model');
-const Interviewer = require('../models/interviewer.model');
-const { handleSequelizeUniqueConstraintError } = require('../utils/errorHandlers');
+const interviewerService = require('../services/interviewer.service');
 const formatEntityResponse = require('../utils/formatEntityResponse');
+const createError = require('http-errors');
 
 // Create a new interviewer
 const createInterviewer = async (req, res, next) => {
   try {
     const { firstName, lastName, email, phoneNumber, resume } = req.body;
 
-    // Create new interviewer in database
-    const newInterviewer = await Interviewer.create({
-      FirstName: firstName,
-      LastName: lastName,
-      Email: email,
-      PhoneNumber: phoneNumber,
-      Resume: resume,
+    const newInterviewer = await interviewerService.createInterviewer({
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      resume,
     });
 
     res.status(201).json(formatEntityResponse(newInterviewer));
@@ -27,13 +24,15 @@ const createInterviewer = async (req, res, next) => {
 // Get all interviewers
 const getAllInterviewers = async (req, res, next) => {
   try {
-    const interviewers = await Interviewer.findAll();
+    const interviewers = await interviewerService.getAllInterviewers();
+
     if (!interviewers.length) {
-      return res.status(204).json({ message: 'No interviewers found.' });
+      return next(createError(204, 'No interviewers found.'));
     }
-    res.json(interviewers.map((interviewer) => formatEntityResponse(interviewer)));
+
+    res.json(interviewers.map(formatEntityResponse));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -42,13 +41,10 @@ const getInterviewerById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const interviewer = await Interviewer.findByPk(id);
-    if (!interviewer) {
-      return res.status(404).json({ message: 'No interviewer matches ID' });
-    }
+    const interviewer = await interviewerService.findInterviewerById(id);
     res.json(formatEntityResponse(interviewer));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -58,27 +54,17 @@ const updateInterviewer = async (req, res, next) => {
   const { firstName, lastName, email, phoneNumber, resume } = req.body;
 
   try {
-    // Find interviewer by ID in database
-    let interviewer = await Interviewer.findByPk(id);
+    const updatedInterviewer = await interviewerService.updateInterviewer(id, {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      resume,
+    });
 
-    // Check if interviewer exists
-    if (!interviewer) {
-      return res.status(404).json({ message: 'No interviewer matches ID' });
-    }
-
-    // Update interviewer fields if provided
-    interviewer.FirstName = firstName || interviewer.FirstName;
-    interviewer.LastName = lastName || interviewer.LastName;
-    interviewer.Email = email || interviewer.Email;
-    interviewer.PhoneNumber = phoneNumber || interviewer.PhoneNumber;
-    interviewer.Resume = resume || interviewer.Resume;
-
-    // Save updated interviewer
-    await interviewer.save();
-
-    res.json(formatEntityResponse(interviewer));
+    res.json(formatEntityResponse(updatedInterviewer));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
@@ -87,39 +73,28 @@ const deleteInterviewer = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const interviewer = await Interviewer.findByPk(id);
-    if (!interviewer) {
-      return res.status(404).json({ message: 'No interviewer matches ID' });
-    }
-
-    await interviewer.destroy();
+    await interviewerService.deleteInterviewer(id);
     res.json({ message: 'Interviewer deleted successfully' });
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 
+// Get candidates by interviewer
 const getCandidatesByInterviewer = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    // Find candidates interviewed by the specified interviewer
-    const candidates = await Candidate.findAll({
-      include: {
-        model: Interview,
-        where: { InterviewerID: id },
-        include: {
-          model: Interviewer,
-          attributes: ['FirstName', 'LastName', 'Email', 'PhoneNumber'],
-        },
-        attributes: ['InterviewDate', 'InterviewTime', 'InterviewType', 'InterviewResult'],
-      },
-    });
+    await interviewerService.findInterviewerById(id);
+    const candidates = await interviewerService.getCandidatesByInterviewer(id);
 
-    // Return the list of candidates
-    res.json(candidates);
+    if (!candidates.length) {
+      return next(createError(204, 'No candidates found for the specified interviewer.'));
+    }
+
+    res.json(candidates.map(formatEntityResponse));
   } catch (err) {
-    next(err);
+    next(createError(500, err.message));
   }
 };
 

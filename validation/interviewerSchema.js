@@ -21,7 +21,6 @@ const interviewerSchema = Joi.object({
   phoneNumber: Joi.string()
     .pattern(/^(\+?\d{1,3}?)?[0-9\s\-()]+$/)
     .required(),
-  resume: Joi.string().allow('', null).optional(),
 });
 
 module.exports = interviewerSchema;
