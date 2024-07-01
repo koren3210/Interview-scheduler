@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-//Formatting the response from the DB from PascalCase to JS convention camelCase.
+// Formatting the response from the DB from PascalCase to JS convention camelCase.
 const formatEntityResponse = (entity) => {
   if (!entity) return null;
 
@@ -8,8 +8,15 @@ const formatEntityResponse = (entity) => {
     const result = {};
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        // Keep keys ending with "ID" as is
-        const formattedKey = key.endsWith('ID') ? key : _.camelCase(key);
+        // Check if the key ends with "ID"
+        let formattedKey;
+        if (key.endsWith('ID')) {
+          // Convert the part before "ID" to camelCase
+          formattedKey = _.camelCase(key.slice(0, -2)) + 'ID';
+        } else {
+          // Convert to camelCase
+          formattedKey = _.camelCase(key);
+        }
         result[formattedKey] = obj[key];
       }
     }
