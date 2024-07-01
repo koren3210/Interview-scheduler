@@ -9,7 +9,6 @@ const { Op } = require('sequelize');
 const createInterview = async (data) => {
   const { candidateID, interviewerID, interviewDate, interviewTime, interviewType, interviewResult } = data;
 
-  // Create new interview in the database
   const newInterview = await Interview.create({
     CandidateID: candidateID,
     InterviewerID: interviewerID,
@@ -32,7 +31,6 @@ const getAllInterviews = async () => {
 
 // Get interview by ID
 const findInterviewById = async (id) => {
-  // Retrieve interview by ID from the database
   const interview = await Interview.findByPk(id);
 
   if (!interview) {
@@ -44,13 +42,10 @@ const findInterviewById = async (id) => {
 
 // Update interview result
 const updateInterviewResult = async (id, interviewResult) => {
-  // Find interview by ID in the database
   let interview = await findInterviewById(id);
 
-  // Update interview result
   interview.InterviewResult = interviewResult || interview.InterviewResult;
 
-  // Save updated interview
   await interview.save();
 
   return interview;

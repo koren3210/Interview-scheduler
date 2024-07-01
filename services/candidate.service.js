@@ -2,10 +2,10 @@ const sequelize = require('../config/db');
 const createError = require('http-errors');
 
 // Service to handle candidate-related operations
+// raw SQL queries with Sequelize ORM for practicing SQL queries
 
 // Create a new candidate
 const createCandidate = async ({ firstName, lastName, email, phoneNumber, resume }) => {
-  // Insert new candidate into the database using raw SQL
   const result = await sequelize.query(
     `INSERT INTO Candidates (FirstName, LastName, Email, PhoneNumber, Resume, createdAt, updatedAt)
      VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
@@ -27,7 +27,6 @@ const createCandidate = async ({ firstName, lastName, email, phoneNumber, resume
 
 // Get all candidates
 const getAllCandidates = async () => {
-  // Retrieve all candidates from the database using raw SQL
   const candidates = await sequelize.query(`SELECT * FROM Candidates`, {
     type: sequelize.QueryTypes.SELECT,
   });
@@ -37,7 +36,6 @@ const getAllCandidates = async () => {
 
 // Get candidate by ID
 const getCandidateById = async (id) => {
-  // Retrieve candidate by ID from the database using raw SQL
   const [candidate] = await sequelize.query(`SELECT * FROM Candidates WHERE CandidateID = ?`, {
     replacements: [id],
     type: sequelize.QueryTypes.SELECT,
@@ -52,7 +50,6 @@ const getCandidateById = async (id) => {
 
 // Update candidate details
 const updateCandidate = async (id, { firstName, lastName, email, phoneNumber, resume }) => {
-  // Retrieve candidate by ID from the database using raw SQL
   const [candidate] = await sequelize.query(`SELECT * FROM Candidates WHERE CandidateID = ?`, {
     replacements: [id],
     type: sequelize.QueryTypes.SELECT,
@@ -62,7 +59,6 @@ const updateCandidate = async (id, { firstName, lastName, email, phoneNumber, re
     throw createError(404, 'No candidate matches ID');
   }
 
-  // Update candidate fields in the database using raw SQL
   await sequelize.query(
     `UPDATE Candidates
      SET FirstName = COALESCE(?, FirstName),
@@ -89,7 +85,6 @@ const updateCandidate = async (id, { firstName, lastName, email, phoneNumber, re
 
 // Delete candidate
 const deleteCandidate = async (id) => {
-  // Delete candidate from the database using raw SQL
   const result = await sequelize.query(`DELETE FROM Candidates WHERE CandidateID = ?`, {
     replacements: [id],
     type: sequelize.QueryTypes.BULKDELETE,
@@ -102,7 +97,6 @@ const deleteCandidate = async (id) => {
 
 // Get scheduled interviews for candidate
 const getScheduledInterviewsForCandidate = async (id) => {
-  // Retrieve candidate by ID from the database using raw SQL
   const [candidate] = await sequelize.query(`SELECT * FROM Candidates WHERE CandidateID = ?`, {
     replacements: [id],
     type: sequelize.QueryTypes.SELECT,
@@ -112,7 +106,6 @@ const getScheduledInterviewsForCandidate = async (id) => {
     throw createError(404, 'No candidate matches ID');
   }
 
-  // Retrieve all scheduled interviews for a specific candidate using raw SQL
   const interviews = await sequelize.query(
     `SELECT 
        i.InterviewID,
@@ -143,7 +136,6 @@ const getScheduledInterviewsForCandidate = async (id) => {
 
 // Retrieve total number of interviews and types for each candidate
 const getInterviewsSummary = async () => {
-  // SQL query to get total number of interviews and types for each candidate
   const summary = await sequelize.query(
     `SELECT 
        c.CandidateID,
@@ -168,7 +160,6 @@ const getInterviewsSummary = async () => {
 
 // Retrieve detailed information for a specific candidate
 const getCandidateDetails = async (id) => {
-  // SQL query to get detailed information for the specific candidate
   const [candidateDetails] = await sequelize.query(
     `SELECT 
        c.CandidateID,

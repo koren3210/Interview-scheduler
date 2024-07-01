@@ -2,8 +2,6 @@ const candidateService = require('../services/candidate.service');
 const formatEntityResponse = require('../utils/formatEntityResponse');
 const createError = require('http-errors');
 
-// Controller using raw SQL queries with Sequelize ORM for practicing SQL queries
-
 // Create a new candidate
 const createCandidate = async (req, res, next) => {
   try {
