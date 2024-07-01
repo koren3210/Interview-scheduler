@@ -16,7 +16,7 @@ const createInterviewSchedule = async (req, res, next) => {
 
     res.status(201).json(formatEntityResponse(newInterviewSchedule));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -31,7 +31,7 @@ const getAllInterviewSchedules = async (req, res, next) => {
 
     res.json(interviewSchedules.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -43,7 +43,7 @@ const getInterviewScheduleById = async (req, res, next) => {
     const interviewSchedule = await interviewScheduleService.findInterviewScheduleById(id);
     res.json(formatEntityResponse(interviewSchedule));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -62,7 +62,7 @@ const updateInterviewSchedule = async (req, res, next) => {
 
     res.json(formatEntityResponse(updatedInterviewSchedule));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -74,7 +74,7 @@ const deleteInterviewSchedule = async (req, res, next) => {
     await interviewScheduleService.deleteInterviewSchedule(id);
     res.json({ message: 'Interview schedule deleted successfully' });
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 

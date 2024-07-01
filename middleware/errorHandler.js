@@ -11,7 +11,6 @@ function errorHandler(err, req, res, next) {
     errStatus = uniqueError.status;
     errMsg = uniqueError.message;
   }
-
   // Log error details
   logger.error({
     status: errStatus,
@@ -19,7 +18,6 @@ function errorHandler(err, req, res, next) {
     url: req.originalUrl,
     method: req.method,
     ip: req.ip,
-    stack: err.stack,
   });
 
   // Respond with the error

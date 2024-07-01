@@ -1,4 +1,6 @@
 const Interviewer = require('../models/interviewer.model');
+const Candidate = require('../models/candidate.model');
+const Interview = require('../models/interview.model');
 const createError = require('http-errors');
 
 // Create a new interviewer

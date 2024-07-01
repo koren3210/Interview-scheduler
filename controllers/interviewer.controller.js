@@ -32,7 +32,7 @@ const getAllInterviewers = async (req, res, next) => {
 
     res.json(interviewers.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -44,7 +44,7 @@ const getInterviewerById = async (req, res, next) => {
     const interviewer = await interviewerService.findInterviewerById(id);
     res.json(formatEntityResponse(interviewer));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -64,7 +64,7 @@ const updateInterviewer = async (req, res, next) => {
 
     res.json(formatEntityResponse(updatedInterviewer));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -76,7 +76,7 @@ const deleteInterviewer = async (req, res, next) => {
     await interviewerService.deleteInterviewer(id);
     res.json({ message: 'Interviewer deleted successfully' });
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -94,7 +94,7 @@ const getCandidatesByInterviewer = async (req, res, next) => {
 
     res.json(candidates.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 

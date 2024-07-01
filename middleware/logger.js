@@ -10,15 +10,24 @@ winston.addColors({
   info: 'green',
 });
 
+// Define log directory and create it if it doesn't exist
 const logsDirectory = process.env.LOGS_DIRECTORY || 'logs';
 if (!fs.existsSync(logsDirectory)) {
   fs.mkdirSync(logsDirectory);
 }
 
+// Define a format for file logs
 const logFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp} ${level}: ${message}`;
 });
 
+const consoleLogFormat = printf(({ level, message, timestamp, url, method, ip }) => {
+  return `${timestamp} ${level}: ${url ? `URL: ${url}` : ''} ${method ? `Method: ${method}` : ''} ${
+    ip ? `IP: ${ip}` : ''
+  } ${message}`;
+});
+
+// Create the logger
 const logger = winston.createLogger({
   level: 'info', // Default level for logging
   format: combine(
@@ -44,7 +53,11 @@ const logger = winston.createLogger({
     // Console transport specifically for HTTP logs
     new winston.transports.Console({
       level: 'http', // Log HTTP level and above to console
-      format: combine(colorize({ all: true }), timestamp({ format: 'YYYY-MM-DD hh:mm:ss.SSS A' }), logFormat),
+      format: combine(
+        colorize({ all: true }), // Add color to console logs
+        timestamp({ format: 'YYYY-MM-DD hh:mm:ss.SSS A' }), // Custom timestamp format
+        consoleLogFormat // Custom format for detailed console logging without stack trace
+      ),
     }),
   ],
 });

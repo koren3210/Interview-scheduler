@@ -18,7 +18,7 @@ const createInterview = async (req, res, next) => {
 
     res.status(201).json(formatEntityResponse(newInterview));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -33,7 +33,7 @@ const getAllInterviews = async (req, res, next) => {
 
     res.json(interviews.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -46,7 +46,7 @@ const getInterviewById = async (req, res, next) => {
 
     res.json(formatEntityResponse(interview));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -60,7 +60,7 @@ const updateInterviewResult = async (req, res, next) => {
 
     res.json(formatEntityResponse(updatedInterview));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -73,7 +73,7 @@ const deleteInterview = async (req, res, next) => {
 
     res.json({ message: 'Interview deleted successfully' });
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -90,7 +90,7 @@ const getInterviewSchedulesByDateRange = async (req, res, next) => {
 
     res.status(200).json(schedules.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 

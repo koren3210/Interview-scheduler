@@ -20,7 +20,7 @@ const createCandidate = async (req, res, next) => {
 
     res.status(201).json(formatEntityResponse(newCandidate));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -36,7 +36,7 @@ const getAllCandidates = async (req, res, next) => {
 
     res.json(candidates.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -50,7 +50,7 @@ const getCandidateById = async (req, res, next) => {
 
     res.json(formatEntityResponse(candidate));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -71,7 +71,7 @@ const updateCandidate = async (req, res, next) => {
 
     res.json(formatEntityResponse(updatedCandidate));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -85,7 +85,7 @@ const deleteCandidate = async (req, res, next) => {
 
     res.json({ message: 'Candidate deleted successfully' });
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -103,7 +103,7 @@ const getScheduledInterviewsForCandidate = async (req, res, next) => {
 
     res.json(interviews.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -119,7 +119,7 @@ const getInterviewsSummary = async (req, res, next) => {
 
     res.status(200).json(summary.map(formatEntityResponse));
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
@@ -133,7 +133,7 @@ const getCandidateDetails = async (req, res, next) => {
 
     res.status(200).json(candidateDetails);
   } catch (err) {
-    next(createError(500, err.message));
+    next(err);
   }
 };
 
